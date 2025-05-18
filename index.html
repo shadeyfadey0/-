@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>جوائز - منصة الألعاب المربحة</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="styles.css">
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-firestore-compat.js"></script>
+</head>
+<body>
+    <!-- الخلفية المتحركة -->
+    <div class="animated-background">
+        <div class="particles"></div>
+    </div>
+
+    <!-- الشريط العلوي -->
+    <header class="main-header">
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">
+                    <img src="assets/logo.png" alt="جوائز">
+                    <span>منصة الألعاب المربحة</span>
+                </div>
+                
+                <nav class="main-nav">
+                    <ul>
+                        <li><a href="#" class="active">الرئيسية</a></li>
+                        <li><a href="#">الألعاب</a></li>
+                        <li><a href="#">المسابقات</a></li>
+                        <li><a href="#">الرعاة</a></li>
+                        <li><a href="#">الدعم</a></li>
+                    </ul>
+                </nav>
+                
+                <div class="user-actions">
+                    <button id="loginBtn" class="btn btn-outline">
+                        <i class="fas fa-sign-in-alt"></i> تسجيل الدخول
+                    </button>
+                    <button id="registerBtn" class="btn btn-primary">
+                        <i class="fas fa-user-plus"></i> إنشاء حساب
+                    </button>
+                    
+                    <div id="userProfile" class="user-profile hidden">
+                        <div class="profile-info">
+                            <img id="userAvatar" src="assets/default-avatar.png" alt="صورة المستخدم">
+                            <span id="usernameDisplay">مستخدم</span>
+                        </div>
+                        <div class="profile-dropdown">
+                            <ul>
+                                <li><a href="#"><i class="fas fa-user"></i> الملف الشخصي</a></li>
+                                <li><a href="#"><i class="fas fa-wallet"></i> محفظتي</a></li>
+                                <li><a href="#"><i class="fas fa-trophy"></i> إنجازاتي</a></li>
+                                <li><a href="#" id="logoutBtn"><i class="fas fa-sign-out-alt"></i> تسجيل خروج</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- القسم الرئيسي -->
+    <main>
+        <section class="hero-section">
+            <div class="container">
+                <div class="hero-content">
+                    <h1>اربح جوائز حقيقية من خلال الألعاب</h1>
+                    <p class="subtitle">شارك في المسابقات اليومية واربح جوائز نقدية وعينية بقيمة تصل إلى 50,000 ريال</p>
+                    
+                    <div class="cta-buttons">
+                        <button id="mainLoginBtn" class="btn btn-primary btn-lg">
+                            <i class="fas fa-play"></i> ابدأ اللعب الآن
+                        </button>
+                        <button id="learnMoreBtn" class="btn btn-outline btn-lg">
+                            <i class="fas fa-info-circle"></i> تعرف أكثر
+                        </button>
+                    </div>
+                    
+                    <div class="stats">
+                        <div class="stat-item">
+                            <div class="stat-number">+1.2M</div>
+                            <div class="stat-label">لاعب مسجل</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-number">5.4M</div>
+                            <div class="stat-label">جائزة موزعة</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-number">24/7</div>
+                            <div class="stat-label">دعم فني</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="hero-image">
+                    <img src="assets/hero-image.png" alt="ألعاب جوائز">
+                </div>
+            </div>
+        </section>
+
+        <!-- باقي أقسام الصفحة -->
+    </main>
+
+    <!-- نافذة تسجيل الدخول -->
+    <div id="loginModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>تسجيل الدخول</h2>
+                <button class="close-modal">&times;</button>
+            </div>
+            
+            <div class="tabs">
+                <button class="tab-btn active" data-tab="emailLogin">بالبريد الإلكتروني</button>
+                <button class="tab-btn" data-tab="phoneLogin">برقم الهاتف</button>
+            </div>
+            
+            <form id="emailLoginForm" class="tab-content active">
+                <div class="form-group">
+                    <label for="loginEmail">البريد الإلكتروني</label>
+                    <input type="email" id="loginEmail" placeholder="example@example.com" required>
+                </div>
+                <div class="form-group">
+                    <label for="loginPassword">كلمة المرور</label>
+                    <div class="password-input">
+                        <input type="password" id="loginPassword" placeholder="••••••••" required>
+                        <i class="far fa-eye toggle-password"></i>
+                    </div>
+                </div>
+                <div class="form-options">
+                    <label>
+                        <input type="checkbox" id="rememberMe"> تذكرني
+                    </label>
+                    <a href="#" id="forgotPassword">نسيت كلمة المرور؟</a>
+                </div>
+                <button type="submit" class="btn btn-primary btn-block">
+                    <i class="fas fa-sign-in-alt"></i> تسجيل الدخول
+                </button>
+                <div id="loginError" class="error-message"></div>
+            </form>
+            
+            <form id="phoneLoginForm" class="tab-content">
+                <div class="form-group">
+                    <label for="phoneNumber">رقم الهاتف</label>
+                    <div class="phone-input">
+                        <select id="countryCode">
+                            <option value="+966">🇸🇦 +966</option>
+                            <option value="+20">🇪🇬 +20</option>
+                            <option value="+971">🇦🇪 +971</option>
+                            <option value="+962">🇯🇴 +962</option>
+                        </select>
+                        <input type="tel" id="phoneNumber" placeholder="5XXXXXXX" required>
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-primary btn-block">
+                    <i class="fas fa-mobile-alt"></i> إرسال رمز التحقق
+                </button>
+                <div id="phoneLoginError" class="error-message"></div>
+                
+                <div id="verifyCodeSection" class="hidden">
+                    <div class="form-group">
+                        <label for="verificationCode">رمز التحقق</label>
+                        <input type="text" id="verificationCode" placeholder="أدخل الرمز المكون من 6 أرقام" maxlength="6" required>
+                    </div>
+                    <button type="button" id="verifyCodeBtn" class="btn btn-primary btn-block">
+                        <i class="fas fa-check-circle"></i> تأكيد الرمز
+                    </button>
+                    <div class="resend-code">
+                        <span id="countdown">02:00</span>
+                        <button type="button" id="resendCodeBtn" class="btn-link" disabled>إعادة إرسال الرمز</button>
+                    </div>
+                </div>
+            </form>
+            
+            <div class="social-login">
+                <div class="divider">
+                    <span>أو سجل الدخول باستخدام</span>
+                </div>
+                <div class="social-buttons">
+                    <button id="googleLoginBtn" class="btn btn-social google">
+                        <i class="fab fa-google"></i> جوجل
+                    </button>
+                    <button id="facebookLoginBtn" class="btn btn-social facebook">
+                        <i class="fab fa-facebook-f"></i> فيسبوك
+                    </button>
+                </div>
+            </div>
+            
+            <div class="switch-auth">
+                ليس لديك حساب؟ <a href="#" id="showRegisterFromLogin">إنشاء حساب جديد</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- نافذة إنشاء حساب -->
+    <div id="registerModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>إنشاء حساب جديد</h2>
+                <button class="close-modal">&times;</button>
+            </div>
+            
+            <form id="registerForm">
+                <div class="form-group">
+                    <label for="registerUsername">اسم المستخدم</label>
+                    <input type="text" id="registerUsername" placeholder="اختر اسمًا فريدًا" required>
+                </div>
+                <div class="form-group">
+                    <label for="registerEmail">البريد الإلكتروني</label>
+                    <input type="email" id="registerEmail" placeholder="example@example.com" required>
+                </div>
+                <div class="form-group">
+                    <label for="registerPhone">رقم الهاتف (اختياري)</label>
+                    <div class="phone-input">
+                        <select id="registerCountryCode">
+                            <option value="+966">🇸🇦 +966</option>
+                            <option value="+20">🇪🇬 +20</option>
+                        </select>
+                        <input type="tel" id="registerPhone" placeholder="5XXXXXXX">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="registerPassword">كلمة المرور</label>
+                    <div class="password-input">
+                        <input type="password" id="registerPassword" placeholder="••••••••" required>
+                        <i class="far fa-eye toggle-password"></i>
+                    </div>
+                    <div class="password-strength">
+                        <span class="strength-bar"></span>
+                        <span class="strength-bar"></span>
+                        <span class="strength-bar"></span>
+                        <span class="strength-text">قوة كلمة المرور: ضعيفة</span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="registerConfirmPassword">تأكيد كلمة المرور</label>
+                    <div class="password-input">
+                        <input type="password" id="registerConfirmPassword" placeholder="••••••••" required>
+                        <i class="far fa-eye toggle-password"></i>
+                    </div>
+                </div>
+                <div class="form-group checkbox-group">
+                    <input type="checkbox" id="agreeTerms" required>
+                    <label for="agreeTerms">أوافق على <a href="#">الشروط والأحكام</a> و <a href="#">سياسة الخصوصية</a></label>
+                </div>
+                <button type="submit" class="btn btn-primary btn-block">
+                    <i class="fas fa-user-plus"></i> إنشاء حساب
+                </button>
+                <div id="registerError" class="error-message"></div>
+            </form>
+            
+            <div class="switch-auth">
+                لديك حساب بالفعل؟ <a href="#" id="showLoginFromRegister">تسجيل الدخول</a>
+            </div>
+        </div>
+    </div>
+
+    <script src="auth.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
